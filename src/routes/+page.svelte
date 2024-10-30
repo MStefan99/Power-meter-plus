@@ -1,11 +1,12 @@
 <script>
 	import ConnectionDialog from '../components/ConnectionDialog.svelte';
-
-	let number = $state(1);
-	let prod = $derived(number * 5)
+	import { device } from '$lib/store.svelte';
 </script>
 
-<h1>Power meter</h1>
-<input type="range" bind:value={number}/>
-<p>{prod}</p>
-<ConnectionDialog/>
+<div class="home">
+	{#if !device}
+		<ConnectionDialog />
+	{:else}
+		<p>Power meter</p>
+	{/if}
+</div>
