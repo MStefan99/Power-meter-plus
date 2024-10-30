@@ -3,13 +3,14 @@
 @import 'tailwindcss/utilities';
 
 .popup-container {
-	@apply fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl shadow-xl border-black p-4;
+	@apply fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl border-black p-4 shadow-xl;
 }
 
 .popup-title {
 	@apply text-center;
 }
 
-input[type=number], button {
-	@apply block py-2 px-3 border-0 rounded-lg shadow-md hover:shadow active:shadow-inner transition-shadow focus:ring-0;
+input[type='number'],
+button {
+	@apply block rounded-lg border-0 px-3 py-2 shadow-md transition-shadow hover:shadow focus:ring-0 active:shadow-inner;
 }

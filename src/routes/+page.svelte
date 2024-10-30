@@ -1,10 +1,10 @@
 <script>
 	import ConnectionDialog from '../components/ConnectionDialog.svelte';
-	import { device } from '$lib/store.svelte';
+	import { getActiveDevice } from '$lib/driver/driver.svelte';
 </script>
 
 <div class="home">
-	{#if !device}
+	{#if !getActiveDevice()}
 		<ConnectionDialog />
 	{:else}
 		<p>Power meter</p>
