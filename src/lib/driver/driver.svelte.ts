@@ -48,10 +48,12 @@ export async function connectDevice(
 }
 
 export function disconnectDevice(): void {
-	if (activeDevice?._port.readable?.locked) {
-		reader?.cancel().then(() => activeDevice?._port.close());
+	const device = activeDevice;
+
+	if (device?._port.readable?.locked) {
+		reader?.cancel().then(() => device?._port.close());
 	} else {
-		activeDevice?._port.close();
+		device?._port.close();
 	}
 
 	activeDevice = null;
