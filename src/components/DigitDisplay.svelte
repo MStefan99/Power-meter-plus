@@ -28,10 +28,10 @@
 
 <style>
 	.digit {
-		--height: 100px;
-		--segment-width: var(--segment, calc(var(--height) / 10));
+		--h: var(--height, 100px);
+		--segment-width: var(--segment, calc(var(--h) / 10));
 
-		--s-long: calc((var(--height) - 3 * var(--segment-width)) / 2);
+		--s-long: calc((var(--h) - 3 * var(--segment-width)) / 2);
 		--s-short: var(--segment-width);
 
 		--bg: var(--color, #030);
@@ -40,7 +40,7 @@
 
 		display: inline-block;
 		transform: skewX(var(--digit-skew));
-		height: var(--height);
+		height: var(--h);
 		width: calc(var(--s-long) + 2 * var(--s-short));
 	}
 
@@ -48,11 +48,12 @@
 		background-color: var(--bg);
 		border-radius: calc(var(--segment-width) / 4);
 		position: absolute;
+		transition: background-color 0.1s ease-out;
 	}
 
 	.segment.lit {
 		background-color: var(--bg-lit);
-		box-shadow: 0 0 min(calc(var(--segment-width)), 36px) calc(0px - var(--segment-width) / 6)
+		box-shadow: 0 0 min(calc(var(--segment-width)), 36px) calc(0px - var(--segment-width) / 8)
 			var(--bg-lit);
 	}
 

@@ -3,8 +3,6 @@
 
 	let baudRate = $state(+(localStorage.getItem('baudrate') ?? 115200));
 
-	$inspect(baudRate);
-
 	$effect(() => {
 		localStorage.setItem('baudrate', baudRate.toString());
 	});
