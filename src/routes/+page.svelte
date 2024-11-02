@@ -4,16 +4,20 @@
 	import PowerView from '../components/PowerView.svelte';
 	import NumberDisplay from '../components/NumberDisplay.svelte';
 
-	let number = 0;
+	let number = -2.34;
 
-	setInterval(() => (number = (number + 0.1234) % 10), 200);
+	// setInterval(() => (number = (number - 0.1234)), 200);
 </script>
 
 <div class="home">
 	{#if !getActiveDevice()}
 		<ConnectionDialog />
-		<div class="m-24">
-			<NumberDisplay value={number} decimalDigits={4} />
+		<div class="display-frame-1">
+			<div class="display-frame-2">
+				<div class="display p-4">
+					<NumberDisplay value={number} decimalDigits={4} />
+				</div>
+			</div>
 		</div>
 	{:else}
 		<PowerView />

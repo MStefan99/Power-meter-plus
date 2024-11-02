@@ -7,8 +7,9 @@
 		decimalDigits?: number;
 	}
 
-	let { value = 0, integerDigits = 1, decimalDigits = 0 }: Props = $props();
+	let { value = 0, integerDigits, decimalDigits = 1 }: Props = $props();
 
+	let iDigits = $derived(integerDigits ?? Math.max(1, Math.ceil(Math.log10(Math.abs(value)))));
 	let decimalPart = $derived(value % 1);
 
 	function* range(start: number, end: number) {
@@ -17,9 +18,10 @@
 </script>
 
 <div class="number-editor">
-	{#each range(1, integerDigits + 1) as i}
+	<span>{value}</span>
+	{#each range(1, iDigits + 1) as i}
 		<span class="mr-2">
-			<DigitDisplay digit={Math.trunc(value / Math.pow(10, integerDigits - i)) % 10} />
+			<DigitDisplay symbol={Math.floor(Math.abs(value / Math.pow(10, iDigits - i))) % 10} />
 		</span>
 	{/each}
 	{#if decimalDigits}
@@ -27,11 +29,12 @@
 	{/if}
 	{#each range(1, decimalDigits) as i}
 		<span class="mr-2">
-			<DigitDisplay digit={Math.trunc(decimalPart * Math.pow(10, i)) % 10} />
+			<DigitDisplay symbol={Math.abs(Math.floor(decimalPart * Math.pow(10, i))) % 10} />
+			<!--<span>{Math.abs(decimalPart * Math.pow(10, i))}</span>-->
 		</span>
 	{/each}
 	<!--Rounding the last digit-->
-	<DigitDisplay digit={Math.round(decimalPart * Math.pow(10, decimalDigits)) % 10} />
+	<DigitDisplay symbol={Math.round(decimalPart * Math.pow(10, decimalDigits)) % 10} />
 </div>
 
 <style>
@@ -44,7 +47,7 @@
 		--h: var(--height, 100px);
 		--bg-lit: var(--color-lit, #0f0);
 		--digit-skew: -8deg;
-		--s: var(--segment-width, calc(var(--h) / 10));
+		--s: var(--segment, calc(var(--h) / 10));
 
 		content: '';
 		display: inline-block;
