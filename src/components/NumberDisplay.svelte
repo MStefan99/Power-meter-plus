@@ -2,39 +2,55 @@
 	import DigitDisplay from './DigitDisplay.svelte';
 
 	interface Props {
-		value: number;
+		value: number | string;
 		integerDigits?: number;
 		decimalDigits?: number;
 	}
 
-	let { value = 0, integerDigits, decimalDigits = 1 }: Props = $props();
+	type NumberSymbol = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '-' | '.';
 
-	let iDigits = $derived(integerDigits ?? Math.max(1, Math.ceil(Math.log10(Math.abs(value)))));
-	let decimalPart = $derived(value % 1);
+	let { value = 0, integerDigits, decimalDigits }: Props = $props();
 
-	function* range(start: number, end: number) {
-		for (let i = start; i < end; i++) yield i;
+	let digits = $derived(extractDigits(value, integerDigits, decimalDigits));
+
+	function extractDigits(
+		num: number | string,
+		intLength?: number,
+		decLength?: number
+	): NumberSymbol[] {
+		const numStr = typeof num === 'number' ? num.toString() : num;
+
+		const isNegative = numStr[0] === '-';
+		const absNumStr = isNegative ? numStr.slice(1) : numStr;
+
+		const intPart = absNumStr.split('.')[0] || '';
+		const decPart = absNumStr.split('.')[1] || '';
+
+		const paddedIntPart =
+			intLength !== undefined
+				? intPart.slice(-intLength + ~~isNegative).padStart(intLength - ~~isNegative, '0')
+				: intPart;
+		const paddedDecPart =
+			decLength !== undefined ? decPart.slice(0, decLength).padEnd(decLength, '0') : decPart;
+
+		return (
+			(isNegative ? '-' : '') +
+			paddedIntPart +
+			(paddedDecPart ? `.${paddedDecPart}` : '')
+		).split('') as NumberSymbol[];
 	}
 </script>
 
 <div class="number-editor">
-	<span>{value}</span>
-	{#each range(1, iDigits + 1) as i}
+	{#each digits as digit}
 		<span class="mr-2">
-			<DigitDisplay symbol={Math.floor(Math.abs(value / Math.pow(10, iDigits - i))) % 10} />
+			{#if digit === '.'}
+				<div class="decimal-separator"></div>
+			{:else}
+				<DigitDisplay symbol={digit} />
+			{/if}
 		</span>
 	{/each}
-	{#if decimalDigits}
-		<span class="decimal-separator mr-2"></span>
-	{/if}
-	{#each range(1, decimalDigits) as i}
-		<span class="mr-2">
-			<DigitDisplay symbol={Math.abs(Math.floor(decimalPart * Math.pow(10, i))) % 10} />
-			<!--<span>{Math.abs(decimalPart * Math.pow(10, i))}</span>-->
-		</span>
-	{/each}
-	<!--Rounding the last digit-->
-	<DigitDisplay symbol={Math.round(decimalPart * Math.pow(10, decimalDigits)) % 10} />
 </div>
 
 <style>

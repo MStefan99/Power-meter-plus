@@ -4,8 +4,6 @@
 	import PowerView from '../components/PowerView.svelte';
 	import NumberDisplay from '../components/NumberDisplay.svelte';
 
-	let number = -2.34;
-
 	// setInterval(() => (number = (number - 0.1234)), 200);
 </script>
 
@@ -15,7 +13,7 @@
 		<div class="display-frame-1">
 			<div class="display-frame-2">
 				<div class="display p-4">
-					<NumberDisplay value={number} decimalDigits={4} />
+					<NumberDisplay value="-1.1234" integerDigits={3} decimalDigits={2} />
 				</div>
 			</div>
 		</div>
