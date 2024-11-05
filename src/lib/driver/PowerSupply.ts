@@ -7,6 +7,7 @@ export class PowerSupply {
 		reject: (err: Error) => void;
 		timeout: number;
 	} | null = null;
+	queuePromise = Promise.resolve();
 
 	constructor(port: SerialPort, debug: boolean = false) {
 		this._port = port;
@@ -21,34 +22,38 @@ export class PowerSupply {
 			const encoder = new TextEncoder();
 			const bytes = encoder.encode(command);
 
-			writer
-				?.write(bytes)
-				.then(() => {
-					writer.releaseLock();
-					resolve();
-				})
-				.catch(reject);
+			this.queuePromise = this.queuePromise.then(() =>
+				writer
+					?.write(bytes)
+					.then(() => {
+						writer.releaseLock();
+						resolve();
+					})
+					.catch(reject)
+			);
 		});
 	}
 
 	async _request(command: string): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
-			const encoder = new TextEncoder();
-			const bytes = encoder.encode(command.replace(/\s*$/, '\r\n'));
 			this._debug && console.log('Sending', command);
 
 			const writer = this._port.writable?.getWriter();
-			writer?.write(bytes).then(() => {
-				writer?.releaseLock();
+			const encoder = new TextEncoder();
+			const bytes = encoder.encode(command.replace(/\s*$/, '\r\n'));
+			this.queuePromise = this.queuePromise.then(() =>
+				writer?.write(bytes).then(() => {
+					writer?.releaseLock();
 
-				this._pendingRequest = {
-					resolve: resolve as (response: string) => void,
-					reject,
-					timeout: setTimeout(() => {
-						reject(new Error('Timed out while waiting for motor response'));
-					}, 20)
-				};
-			});
+					this._pendingRequest = {
+						resolve: resolve as (response: string) => void,
+						reject,
+						timeout: setTimeout(() => {
+							reject(new Error('Timed out while waiting for motor response'));
+						}, 20)
+					};
+				})
+			);
 		});
 	}
 
